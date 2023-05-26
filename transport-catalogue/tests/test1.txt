@@ -1,0 +1,6 @@
+4
+Stop Tolstopaltsevo: 55.611087, 37.208290
+Stop Marushkino: 55.595884, 37.209755
+Bus 1: Biryulyovo Zapadnoye > Biryusinka > Universam > Biryulyovo Tovarnaya > Biryulyovo Passazhirskaya > Biryulyovo Zapadnoye
+Stop Rasskazovka: 55.632761, 37.333324
+Bus 2: Tolstopaltsevo - Marushkino - Rasskazovka
