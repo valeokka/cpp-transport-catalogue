@@ -1,6 +1,7 @@
 #include "stat_reader.h"
-
-void SReader::ReadStat(TransportCatalogue::TransportCatalogue& tc){
+namespace TransportCatalogue{
+    
+void SReader::ReadStat(const TransportCatalogue& tc){
     std::string request_count_string;
     std::getline(is_, request_count_string);
     int request_count = std::stoi(request_count_string);
@@ -13,32 +14,32 @@ void SReader::ReadStat(TransportCatalogue::TransportCatalogue& tc){
         text_sv = text_sv.substr(text_sv.find(' '));
         if(request_type == "Bus"){
             std::string name = text_sv.substr(1);
-            if(tc.GetBus(name) != nullptr){
             OutBusStat(tc, name);
-            }else{
-                std::cout << "Bus " << name << ": not found" << std::endl;
-            }
         }else if(request_type == "Stop"){
             std::string name = text_sv.substr(1);
-            if(tc.GetStop(name) != nullptr){
-                OutStopRoutes(tc, name);
-            }else{
-                std::cout << "Stop " << name << ": not found" << std::endl;
-            }
+            OutStopRoutes(tc, name);
         }
     }
 }
 
-void SReader::OutBusStat(TransportCatalogue::TransportCatalogue& tc, std::string_view bus_name){
-    TransportCatalogue::Utility::BusInfo res = tc.GetBusInfo(bus_name);
+void SReader::OutBusStat(const TransportCatalogue& tc, std::string_view bus_name){
+    auto res_opt = tc.GetBusInfo(bus_name);
+    if(res_opt.has_value()){
+    Utility::BusInfo res = res_opt.value();
     std::cout << "Bus " << bus_name << ": " << res.all_count << " stops on route, " <<
-    res.unique_count << " unique stops, " << std::setprecision(6) << res.length << " route length, " << 
-    res.curvation << " curvature"<< std::endl;
+        res.unique_count << " unique stops, " << std::setprecision(6) << res.length << " route length, " << 
+        res.curvation << " curvature"<< std::endl;
+    }else{
+        std::cout << "Bus " << bus_name << ": not found" << std::endl;
+    }
+
 }
 
-void SReader::OutStopRoutes(TransportCatalogue::TransportCatalogue& tc, std::string_view stop_name){
+void SReader::OutStopRoutes(const TransportCatalogue& tc, std::string_view stop_name){
 
-    std::unordered_set <std::string_view> unordered_res = tc.GetStopRoutes(stop_name);
+    auto res_opt = tc.GetStopRoutes(stop_name);
+    if(res_opt.has_value()){
+    std::unordered_set <std::string_view> unordered_res = res_opt.value();
     if(unordered_res.size() == 0){ std::cout << "Stop " << stop_name << ": no buses" << std::endl; } else{
         std::set <std::string_view> res;
 //Проверь есть ли смысл тут в move
@@ -46,4 +47,8 @@ void SReader::OutStopRoutes(TransportCatalogue::TransportCatalogue& tc, std::str
         std::cout << "Stop " << stop_name << ": buses ";
         for(auto route : res){ std::cout << route << " "; }
         std::cout <<std::endl;}
+    }else{
+        std::cout << "Stop " << stop_name << ": not found" << std::endl;
+    }
+}
 }

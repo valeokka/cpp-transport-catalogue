@@ -9,11 +9,8 @@ void TransportCatalogue::AddStop(std::string name_in, Coordinates coord_in){
     Stop* stop = &stop_list_.back();
     stops_by_name_[stop->name] = stop; 
 }
-void TransportCatalogue::AddStop(std::string name_in, double lat_in, double lng_in){
-    AddStop(name_in, {lat_in, lng_in});
-}
 
-void TransportCatalogue::AddBus(std::string name_in, std::vector<std::string> stops_in){
+void TransportCatalogue::AddBus(std::string name_in, const std::vector<std::string>& stops_in){
     std::vector<Stop*> stops;  
     for(std::string_view stop : stops_in){
     if(stops_by_name_.count(stop) == 0) AddStop(std::string{stop}, {0,0}); 
@@ -42,10 +39,12 @@ const Bus* TransportCatalogue::GetBus(std::string_view bus) const{
 		else { return res; }
 }
 
-Utility::BusInfo TransportCatalogue::GetBusInfo(std::string_view bus_name) {
-
+std::optional <Utility::BusInfo>  TransportCatalogue::GetBusInfo(std::string_view bus_name) const {
+    if(bus_by_name_.count(bus_name) == 0){
+        return {};
+    }
     std::unordered_set<std::string_view> stops_set;
-    Bus* bus = bus_by_name_[bus_name];
+    Bus* bus = bus_by_name_.at(bus_name);
     for(const auto& stop : bus->route){
         stops_set.insert(stop->name);
     }
@@ -72,15 +71,18 @@ Utility::BusInfo TransportCatalogue::GetBusInfo(std::string_view bus_name) {
     }
 
     double curvation = real_length / coord_lenght;
-    return{bus->route.size(), stops_set.size(),real_length, curvation};
+    return{{bus->route.size(), stops_set.size(),real_length, curvation}};
 }
 
-std::unordered_set<std::string_view> TransportCatalogue::GetStopRoutes(std::string_view stop_in){
-
-    return stops_by_name_[stop_in]->routes;
+std::optional <std::unordered_set<std::string_view>> TransportCatalogue::GetStopRoutes(std::string_view stop_in) const {
+    if(stops_by_name_.count(stop_in) == 0) { 
+        return {};
+    }else{
+    return stops_by_name_.at(stop_in)->routes;
+    }
 }
 
-void TransportCatalogue::AddDistance(std::string left, std::string right, int distance){
+void TransportCatalogue::SetDistance(std::string_view left, std::string_view right, int distance){
     std::pair<Stop*, Stop*> key = std::make_pair(stops_by_name_[left],stops_by_name_[right]);
     distances_[std::move(key)] = distance;
 }

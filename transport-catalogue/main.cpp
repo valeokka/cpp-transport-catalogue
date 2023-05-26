@@ -10,8 +10,8 @@ int main(){
     TransportCatalogue::TransportCatalogue tc;
 
     //tc.AddBus("sA50azC97OMPt3BPX", {"tPniDCwlR","UsaQup0GVKc2oPtsPdvk"});
-    IReader IRead(std::cin);
-    SReader SRead(std::cin);
+    TransportCatalogue::IReader IRead(std::cin);
+    TransportCatalogue::SReader SRead(std::cin);
     //auto b =tc.GetBus("sA50azC97OMPt3BPX");
     //SRead.OutBusStat(tc,"sA50azC97OMPt3BPX" );
    // std::cout << b->name << " route =";

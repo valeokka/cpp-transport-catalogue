@@ -9,6 +9,7 @@
 #include <utility>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 
 #include "geo.h"
 
@@ -64,13 +65,12 @@ public:
 
     TransportCatalogue() {}
     void AddStop(std::string name_in, Coordinates coord_in);
-    void AddStop(std::string name_in, double lat_in, double lng_in);
-    void AddBus(std::string name_in, std::vector<std::string> stops_in);
+    void AddBus(std::string name_in, const std::vector<std::string>& stops_in);
     const Stop* GetStop(std::string_view stop) const;    
     const Bus* GetBus(std::string_view bus) const;
-    Utility::BusInfo GetBusInfo(std::string_view bus);
-    std::unordered_set<std::string_view> GetStopRoutes(std::string_view stop);
-    void AddDistance(std::string left, std::string right, int distance);
+    std::optional <Utility::BusInfo> GetBusInfo(std::string_view bus) const;
+    std::optional <std::unordered_set<std::string_view>> GetStopRoutes(std::string_view stop) const;
+    void SetDistance(std::string_view left, std::string_view right, int distance);
     size_t GetStopCount() const;    
     size_t GetBusCount() const;
 
