@@ -8,7 +8,6 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "*.cpp",
-                
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],

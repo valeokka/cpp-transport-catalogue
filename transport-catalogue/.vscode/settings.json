@@ -18,6 +18,9 @@
         "cwchar": "cpp",
         "cwctype": "cpp",
         "deque": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
         "string": "cpp",
         "unordered_map": "cpp",
         "unordered_set": "cpp",
@@ -51,6 +54,6 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "set": "cpp"
+        "variant": "cpp"
     }
 }

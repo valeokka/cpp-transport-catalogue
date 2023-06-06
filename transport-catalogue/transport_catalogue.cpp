@@ -2,6 +2,8 @@
 
 namespace TransportCatalogue{
 
+using namespace geo;
+
 void TransportCatalogue::AddStop(std::string name_in, Coordinates coord_in){
     if(stops_by_name_.count(name_in)) return;
     
@@ -10,15 +12,13 @@ void TransportCatalogue::AddStop(std::string name_in, Coordinates coord_in){
     stops_by_name_[stop->name] = stop; 
 }
 
-void TransportCatalogue::AddBus(std::string name_in, const std::vector<std::string>& stops_in){
+void TransportCatalogue::AddBus(std::string name_in, bool is_round, const std::vector<std::string>& stops_in){
     std::vector<Stop*> stops;  
     for(std::string_view stop : stops_in){
-    if(stops_by_name_.count(stop) == 0) AddStop(std::string{stop}, {0,0}); 
+    if(stops_by_name_.count(stop) == 0) { AddStop(std::string{stop}, {0,0});}
         stops.push_back(stops_by_name_.at(stop));
-        // GetStop(stop)->routes.insert(name_in);
-        // Возможно так будет быстрее но нужно переделывать роутес под стринг
     }
-    bus_list_.push_back({name_in, std::move(stops)});
+    bus_list_.push_back({name_in, std::move(stops), is_round});
     Bus* bus = &bus_list_.back();
     bus_by_name_[bus->name] = std::move(bus);
     auto bus_tc = bus_by_name_[name_in];
@@ -39,10 +39,16 @@ const Bus* TransportCatalogue::GetBus(std::string_view bus) const{
 		else { return res; }
 }
 
+const std::unordered_map<std::string_view, Stop*> TransportCatalogue::RequestStops() const{ 
+    return stops_by_name_;
+}
+
+const std::unordered_map<std::string_view, Bus*> TransportCatalogue::RequestBuses () const{ 
+    return bus_by_name_;
+}
+
 std::optional <Utility::BusInfo>  TransportCatalogue::GetBusInfo(std::string_view bus_name) const {
-    if(bus_by_name_.count(bus_name) == 0){
-        return {};
-    }
+    if(bus_by_name_.count(bus_name) == 0){ return {};}
     std::unordered_set<std::string_view> stops_set;
     Bus* bus = bus_by_name_.at(bus_name);
     for(const auto& stop : bus->route){
@@ -51,7 +57,7 @@ std::optional <Utility::BusInfo>  TransportCatalogue::GetBusInfo(std::string_vie
 
     double coord_lenght = 0.0;
     int real_length = 0;
-    for(int i = 0; i < bus->route.size()-1; ++i){
+    for(size_t i = 0; i < bus->route.size()-1; ++i){
         Stop* left = bus->route[i];
         Stop* right = bus->route[i+1];
         int distance;
@@ -60,11 +66,8 @@ std::optional <Utility::BusInfo>  TransportCatalogue::GetBusInfo(std::string_vie
             distance = distances_.at(seq_pair);
         }else{
             std::pair<Stop*, Stop*> rev_pair = std::make_pair(right,left);
-            if(distances_.count(rev_pair)){
-                distance = distances_.at(rev_pair);
-            }else{
-                distance =0;
-            }
+            if(distances_.count(rev_pair)){ distance = distances_.at(rev_pair);}
+            else{ distance =0;}
         }
         real_length += distance;
         coord_lenght += ComputeDistance(left->coords, right->coords);
@@ -75,11 +78,8 @@ std::optional <Utility::BusInfo>  TransportCatalogue::GetBusInfo(std::string_vie
 }
 
 std::optional <std::unordered_set<std::string_view>> TransportCatalogue::GetStopRoutes(std::string_view stop_in) const {
-    if(stops_by_name_.count(stop_in) == 0) { 
-        return {};
-    }else{
-    return stops_by_name_.at(stop_in)->routes;
-    }
+    if(stops_by_name_.count(stop_in) == 0) { return {};}
+    else{ return stops_by_name_.at(stop_in)->routes;}
 }
 
 void TransportCatalogue::SetDistance(std::string_view left, std::string_view right, int distance){
@@ -87,10 +87,7 @@ void TransportCatalogue::SetDistance(std::string_view left, std::string_view rig
     distances_[std::move(key)] = distance;
 }
 
-size_t TransportCatalogue::GetStopCount() const{
-    return stop_list_.size();
-}  
-size_t TransportCatalogue::GetBusCount() const{
-    return bus_list_.size();
-}
-}
+size_t TransportCatalogue::GetStopCount() const{ return stop_list_.size();}  
+size_t TransportCatalogue::GetBusCount() const{ return bus_list_.size();}
+
+}//namespace TransportCatalogue
