@@ -8,11 +8,11 @@
 #include "geo.h"
 
 namespace TransportCatalogue{
-using namespace geo;
+
 
 struct Stop{
     std::string name;
-    Coordinates coords;
+    geo::Coordinates coords;
     std::unordered_set<std::string_view> routes;
 
     bool operator<(Stop other);

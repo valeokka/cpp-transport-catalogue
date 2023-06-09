@@ -12,13 +12,14 @@
 #include "svg.h"
 #include "map_renderer.h"
 #include "transport_catalogue.h"
+#include "json_builder.h"
 
 namespace TransportCatalogue{
 
 class JSONReader{
 public:
     JSONReader() = default;
-    JSONReader(std::istream& is);
+    explicit JSONReader(std::istream& is);
     void Read(TransportCatalogue& tc, MapRender::MapRenderer& render);
 
 private:

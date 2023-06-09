@@ -14,7 +14,6 @@
 
 
 namespace MapRender{
-using namespace TransportCatalogue;
 
 inline const double EPSILON = 1e-6;
 inline bool IsZero(double value) { return std::abs(value) < EPSILON;}
@@ -107,14 +106,14 @@ class MapRenderer{
 public:
     MapRenderer() = default;
     void SetSettings(const RenderOptions& settings);
-    void SetRoutes(const std::unordered_map<std::string_view, Bus* > &routes);
-    void SetStops(const std::unordered_map<std::string_view, Stop*> &stops);
+    void SetRoutes(const std::unordered_map<std::string_view, TransportCatalogue::Bus* > &routes);
+    void SetStops(const std::unordered_map<std::string_view, TransportCatalogue::Stop*> &stops);
     void Render(std::ostream &output);
 
 private:
     RenderOptions settings_; 
-    std::unordered_map<std::string_view, Stop*> stops_;
-    std::unordered_map<std::string_view, Bus*> routes_;
+    std::unordered_map<std::string_view, TransportCatalogue::Stop*> stops_;
+    std::unordered_map<std::string_view, TransportCatalogue::Bus*> routes_;
     svg::Document doc_;
 
     template<typename T>
@@ -126,13 +125,13 @@ private:
     };
 
     void RenderBusRoutesLinesLayer(const SphereProjector& projector,
-    std::set<const Bus*, LexSort<Bus>>& routes_to_render);
+    std::set<const TransportCatalogue::Bus*, LexSort<TransportCatalogue::Bus>>& routes_to_render);
     void RenderRoutesNamesLayer(const SphereProjector& projector,
-        std::set<const Bus*, LexSort<Bus>>& routes_to_render);
+        std::set<const TransportCatalogue::Bus*, LexSort<TransportCatalogue::Bus>>& routes_to_render);
     void RenderStopsLayer(const SphereProjector& projector,
-        std::set<const Stop*, LexSort<Stop>>& stops_to_render);
+        std::set<const TransportCatalogue::Stop*, LexSort<TransportCatalogue::Stop>>& stops_to_render);
     void RenderStopsNamesLayer(const SphereProjector &projector,
-        std::set<const Stop*, LexSort<Stop>>& stops_to_render);
+        std::set<const TransportCatalogue::Stop*, LexSort<TransportCatalogue::Stop>>& stops_to_render);
     
 };
 

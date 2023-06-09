@@ -11,18 +11,18 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render){
     std::unordered_map<std::string, std::pair<bool, std::vector<std::string>>> buses;
     std::vector<std::tuple<std::string, std::string, int>> distance_stops; 
 
-    auto requests = json::Load(is_).GetRoot().AsMap();
+    auto requests = json::Load(is_).GetRoot().AsDict();
     
     if(requests.count("base_requests")){
         auto base_requests = requests.at("base_requests").AsArray();
         for (auto request_map : base_requests){
-            json::Dict request = request_map.AsMap();
+            json::Dict request = request_map.AsDict();
             std::string name = request.at("name").AsString();
             if(request.at("type") == "Bus"){
                 buses[name] = std::move(ReadBus(request));
             } else if(request.at("type") == "Stop"){
                 stops[name] = ReadStop(request);
-                for(const auto [distance_to, distance] : request.at("road_distances").AsMap()){
+                for(const auto [distance_to, distance] : request.at("road_distances").AsDict()){
                     distance_stops.push_back(std::make_tuple(name, std::move(distance_to), distance.AsInt()));
                 }
             }
@@ -35,7 +35,7 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render){
         {tc.SetDistance(name,distance_to, distance);}
     }
     if(requests.count("render_settings")){
-        auto render_requests = requests.at("render_settings").AsMap();
+        auto render_requests = requests.at("render_settings").AsDict();
         auto bus_label_offset = 
                 render_requests.at("bus_label_offset").AsArray();
         auto stop_label_offset = 
@@ -76,7 +76,7 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render){
         json::Array results;
         auto stat_requests = requests.at("stat_requests").AsArray();
         for (auto request_map : stat_requests){
-            json::Dict request = request_map.AsMap();
+            json::Dict request = request_map.AsDict();
             int id = request.at("id").AsInt();
             if(request.at("type") == "Bus"){
                 results.push_back(json::Node(OutBusStat(tc, request.at("name").AsString(), id)));
@@ -120,28 +120,33 @@ std::pair<bool, std::vector<std::string>> JSONReader::ReadBus(const json::Dict& 
 
 json::Dict JSONReader::OutBusStat(const TransportCatalogue& tc, std::string_view bus_name, int id){
     auto res_out = tc.GetBusInfo(bus_name);
-    json::Dict info;
+    json::Node info;
     if(res_out.has_value()){
         Utility::BusInfo res = res_out.value();
-            int unique_count = res.unique_count;
-            int all_count = res.all_count;
-            info["curvature"] = res.curvation;
-            info["request_id"] = id;
-            info["route_length"] = res.length;
-            info["stop_count"] = all_count;
-            info["unique_stop_count"] = unique_count;
-
+        int unique_count = res.unique_count;
+        int all_count = res.all_count;
+        info=
+        json::Builder{}.StartDict()
+        .Key("curvature").Value(res.curvation)
+        .Key("request_id").Value(id)
+        .Key("route_length").Value(res.length)
+        .Key("stop_count").Value(all_count)
+        .Key("unique_stop_count").Value(unique_count)
+        .EndDict().Build();
     }else{
-        info["request_id"] = id;
-        info["error_message"] = "not found";
+        info=
+        json::Builder{}.StartDict()
+        .Key("error_message").Value("not found")
+        .Key("request_id").Value(id)
+        .EndDict().Build();
     }
-    return info;
+    return info.AsDict();
 
 }
 
 json::Dict JSONReader::OutStopRoutes(const TransportCatalogue& tc, std::string_view stop_name, int id){
     auto res_opt = tc.GetStopRoutes(stop_name);
-    json::Dict info;
+    json::Node info;
     if(res_opt.has_value()){
         auto unordered_res = res_opt.value();
         json::Array buses;
@@ -149,18 +154,24 @@ json::Dict JSONReader::OutStopRoutes(const TransportCatalogue& tc, std::string_v
         if(!unordered_res.size() == 0){
             std::set <std::string_view> res;
             for (auto route : unordered_res){ res.insert(std::move(route)); }
-            for(auto route : res){
+            for (auto route : res){
                 buses.push_back(json::Node(std::string{route}));
             }
         }
-        info["buses"] = buses;
-        info["request_id"] = id;
+        info=
+        json::Builder{}.StartDict()
+        .Key("buses").Value(buses)
+        .Key("request_id").Value(id)
+        .EndDict().Build();
         
     }else{
-        info["request_id"] = id;
-        info["error_message"] = "not found";
+        info = 
+        json::Builder{}.StartDict()
+        .Key("request_id").Value(id)
+        .Key("error_message").Value("not found")
+        .EndDict().Build();
     }
-    return info;
+    return info.AsDict();
 }
 
 svg::Color JSONReader::ProccedColor(const json::Node& request){
@@ -184,11 +195,13 @@ json::Dict JSONReader::OutMapRender(const TransportCatalogue& tc, MapRender::Map
     render.SetStops(tc.RequestStops());
     render.Render(render_to);
 
-    json::Dict result;
     std::string render_string = render_to.str();
-    result["map"] = json::Node(render_string);
-    result["request_id"] = id;
+    json::Node result_node =
+    json::Builder{}.StartDict()
+    .Key("map").Value(render_string)
+    .Key("request_id").Value(id)
+    .EndDict().Build();
 
-    return result;
+    return result_node.AsDict();
 }
 }//namespace TransportCatalogue

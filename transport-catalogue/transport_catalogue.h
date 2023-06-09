@@ -15,13 +15,12 @@
 #include "domain.h"
 
 namespace TransportCatalogue{
-using namespace geo;
 
 class TransportCatalogue{
 public:
 
     TransportCatalogue() {}
-    void AddStop(std::string name_in, Coordinates coord_in);
+    void AddStop(std::string name_in, geo::Coordinates coord_in);
     void AddBus(std::string name_in, bool is_round, const std::vector<std::string>& stops_in);
     const Stop* GetStop(std::string_view stop) const;    
     const Bus* GetBus(std::string_view bus) const;
