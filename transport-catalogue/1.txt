@@ -1,0 +1,33 @@
+
+class Builder::DictItemContext : public ItemContext{
+public:
+    DictItemContext(Builder& builder) : ItemContext(builder) {}
+    KeyItemContext Key(std::string key);
+    Builder& EndDict();
+};
+
+class Builder::ArrayItemContext : public ItemContext{
+public:
+    ArrayItemContext(Builder& builder) : ItemContext(builder) {}
+    ArrayItemContext Value(Node::Value value_in);
+    ArrayItemContext StartArray();
+    DictItemContext StartDict();
+    Builder& EndArray();
+
+};
+
+class Builder::KeyItemContext : public ItemContext{
+public:
+    KeyItemContext(Builder& builder) : ItemContext(builder) {}
+    KeyValueContext Value(Node::Value value_in);
+    ArrayItemContext StartArray();
+    DictItemContext StartDict();
+};
+
+class Builder::KeyValueContext : public ItemContext{
+public:
+    KeyValueContext(Builder& builder) : ItemContext(builder) {}
+    KeyItemContext Key(std::string key);
+    Builder& EndDict();
+    
+};

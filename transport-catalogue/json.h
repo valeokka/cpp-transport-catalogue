@@ -23,7 +23,7 @@ public:
     using variant::variant;
     using Value = variant;
 
-    explicit Node(variant value) : variant(value) {}
+    explicit Node(variant value) : variant(std::move(value)) {}
 
     bool IsInt() const {
         return std::holds_alternative<int>(*this);
@@ -74,7 +74,14 @@ public:
         if (!IsArray()) {
             throw std::logic_error("Not an array"s);
         }
+        return std::get<Array>(*this);
+    }
 
+    Array& ModifyArray() {
+        using namespace std::literals;
+        if (!IsArray()) {
+            throw std::logic_error("Not an array"s);
+        }
         return std::get<Array>(*this);
     }
 
@@ -94,6 +101,15 @@ public:
         return std::holds_alternative<Dict>(*this);
     }
     const Dict& AsDict() const {
+        using namespace std::literals;
+        if (!IsDict()) {
+            throw std::logic_error("Not a dict"s);
+        }
+
+        return std::get<Dict>(*this);
+    }
+
+    Dict& ModifyDict() {
         using namespace std::literals;
         if (!IsDict()) {
             throw std::logic_error("Not a dict"s);

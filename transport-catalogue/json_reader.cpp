@@ -87,7 +87,8 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render){
             }
 
        }
-       json::Print(json::Node(results), out_);
+    //    json::Node node = ;
+       json::Print(json::Document(std::move(std::move(results))), out_);
     }
 }
 
