@@ -8,7 +8,8 @@ using namespace TransportCatalogue;
 int main() {
 
     JSONReader js(std::cin);
-    MapRender::MapRenderer render;
     TransportCatalogue::TransportCatalogue tc;
-    js.Read(tc,render);
+    MapRender::MapRenderer render;
+    TransportCatalogue::Router::TransportRouter router;
+    js.Read(tc,render,router);
 }

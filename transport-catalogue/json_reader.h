@@ -12,6 +12,7 @@
 #include "svg.h"
 #include "map_renderer.h"
 #include "transport_catalogue.h"
+#include "transport_router.h"
 #include "json_builder.h"
 
 namespace TransportCatalogue{
@@ -20,7 +21,7 @@ class JSONReader{
 public:
     JSONReader() = default;
     explicit JSONReader(std::istream& is);
-    void Read(TransportCatalogue& tc, MapRender::MapRenderer& render);
+    void Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Router::TransportRouter& router);
 
 private:
     std::istream& is_;
@@ -30,6 +31,8 @@ private:
     json::Dict OutStopRoutes(const TransportCatalogue& tc, std::string_view stop_name, int id);
     json::Dict OutBusStat(const TransportCatalogue& tc, std::string_view bus_name, int id);
     json::Dict OutMapRender(const TransportCatalogue& tc, MapRender::MapRenderer& render, int id);
+    json::Dict OutRouteInfo(const TransportCatalogue& tc, Router::TransportRouter& router,
+                                            std::string_view from, std::string_view to, int id);
     svg::Color ProccedColor(const json::Node& request);
 };
 

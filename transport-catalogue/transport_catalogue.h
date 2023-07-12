@@ -10,9 +10,12 @@
 #include <iomanip>
 #include <iostream>
 #include <optional>
+#include <memory>
 
 #include "geo.h"
 #include "domain.h"
+#include "graph.h"
+#include "router.h"
 
 namespace TransportCatalogue{
 
@@ -31,11 +34,13 @@ public:
     size_t GetBusCount() const;
     const std::unordered_map<std::string_view, Stop*> RequestStops() const;
     const std::unordered_map<std::string_view, Bus*> RequestBuses() const;
+    int GetDistance(const Stop* lhs, const Stop* rhs) const;
+	size_t GetVertexCount() const;
 
 private:
-    
     std::deque<Stop> stop_list_;
     std::deque<Bus> bus_list_;
+    size_t vertex_count_ = 0;
     std::unordered_map<std::string_view, Stop*> stops_by_name_;
     std::unordered_map<std::string_view, Bus*> bus_by_name_;
     std::unordered_map<std::pair<Stop*, Stop*>, int, Utility::StopDistanceHasher> distances_;
