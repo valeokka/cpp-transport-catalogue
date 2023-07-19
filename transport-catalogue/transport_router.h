@@ -36,18 +36,21 @@ struct CompletedRoute {
 class TransportRouter {
 public:
 	std::optional<CompletedRoute> ResultRoute(const TransportCatalogue& tc, 
-								 graph::VertexId from, graph::VertexId to);
+								std::string_view from, std::string_view to);
 	void SetBusWaitTime(int time);
 	void SetBusSpeed(double speed);
 private:
+	int bus_wait_time_ = 0;
+	double bus_speed_ = 0.0;
+	graph::VertexId vertex_count_ = 0;
 	graph::DirectedWeightedGraph<double> graph_;
 	std::unordered_map<graph::EdgeId, EdgeInfo> edges_;
 	std::unique_ptr<graph::Router<double>> router_;
-
+	std::unordered_map<std::string_view, graph::VertexId> vertex_ids;
+	
 	void CreateGraph(const std::unordered_map <std::string_view, Bus*>& info_bus, const TransportCatalogue& tc);
 	std::optional<CompletedRoute> ComputeRoute(graph::VertexId from, graph::VertexId to);
-	int bus_wait_time_ = 0;
-	double bus_speed_ = 0.0;
+	void SetVertextIDs(const TransportCatalogue& tc);
 };
 } //namespace Router
 } //namespace TransportCatalogue

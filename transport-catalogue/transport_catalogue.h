@@ -40,7 +40,6 @@ public:
 private:
     std::deque<Stop> stop_list_;
     std::deque<Bus> bus_list_;
-    size_t vertex_count_ = 0;
     std::unordered_map<std::string_view, Stop*> stops_by_name_;
     std::unordered_map<std::string_view, Bus*> bus_by_name_;
     std::unordered_map<std::pair<Stop*, Stop*>, int, Utility::StopDistanceHasher> distances_;

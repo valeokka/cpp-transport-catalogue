@@ -9,7 +9,7 @@ void TransportCatalogue::AddStop(std::string name_in, Coordinates coord_in){
     
     stop_list_.push_back({std::move(name_in),std::move(coord_in),{}});
     Stop* stop = &stop_list_.back();
-    stop->vertex_id = vertex_count_++;
+    // stop->vertex_id = vertex_count_++;
     stops_by_name_[stop->name] = stop; 
 }
 
@@ -97,6 +97,5 @@ int TransportCatalogue::GetDistance(const Stop* lhs, const Stop* rhs) const{
 
 size_t TransportCatalogue::GetStopCount() const{ return stop_list_.size();}  
 size_t TransportCatalogue::GetBusCount() const{ return bus_list_.size();}
-size_t TransportCatalogue::GetVertexCount() const{ return vertex_count_;}
 
 }//namespace TransportCatalogue

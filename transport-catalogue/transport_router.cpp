@@ -7,16 +7,23 @@ void TransportRouter::SetBusWaitTime(int time){bus_wait_time_ = time;}
 void TransportRouter::SetBusSpeed(double speed){bus_speed_ = speed;}
 
 std::optional<CompletedRoute> TransportRouter::ResultRoute(const TransportCatalogue& tc, 
-											  graph::VertexId from, graph::VertexId to){
-
+											std::string_view from, std::string_view to){
+	if(vertex_ids.size() == 0){SetVertextIDs(tc);} // создается только если не был создан ранее, т.к. в таком случае size() == 0
 	const std::unordered_map<std::string_view, Bus*>& info_bus = tc.RequestBuses();
-	if (graph_.GetVertexCount() == 0){CreateGraph(info_bus, tc);}
-	return ComputeRoute(from, to);
+	if (graph_.GetVertexCount() == 0){CreateGraph(info_bus, tc);} // создается только если не был создан ранее, т.к. в таком случае GetVertexCount() == 0
+	return ComputeRoute(vertex_ids.at(from), vertex_ids.at(to));
+}
+
+void TransportRouter::SetVertextIDs(const TransportCatalogue& tc){
+	std::unordered_map<std::string_view, Stop*> stops = tc.RequestStops();
+	for(auto [sv, stop] : stops){
+		vertex_ids[stop->name] = vertex_count_++;
+	}
 }
 
 void TransportRouter::CreateGraph(const std::unordered_map <std::string_view, Bus*>& info_bus, 
                                                                 const TransportCatalogue& tc) {
-	graph_.SetVertexCount(tc.GetVertexCount());
+	graph_.SetVertexCount(vertex_count_);
 	double bus_velocity = bus_speed_ * M_MMIN;
 
 	for (auto [bus_name, info] : info_bus) {
@@ -28,7 +35,7 @@ void TransportRouter::CreateGraph(const std::unordered_map <std::string_view, Bu
 				
 				for (auto next_vertex = it + 1; next_vertex != bus->route.end(); ++next_vertex){
 					time += tc.GetDistance(*prev(next_vertex), *next_vertex) / bus_velocity;
-					edges_[graph_.AddEdge({ (*it)->vertex_id,(*next_vertex)->vertex_id, time })]
+					edges_[graph_.AddEdge({ vertex_ids.at((*it)->name),vertex_ids.at((*next_vertex)->name), time })]
 												  ={ *it,bus,static_cast<int>(next_vertex - it)};
 				}	
 			}

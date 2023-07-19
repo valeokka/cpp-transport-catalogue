@@ -216,7 +216,7 @@ json::Dict JSONReader::OutMapRender(const TransportCatalogue& tc, MapRender::Map
 
 json::Dict JSONReader::OutRouteInfo(const TransportCatalogue& tc, Router::TransportRouter& router,
                                             std::string_view from, std::string_view to, int id){
-    auto info = std::move(router.ResultRoute(tc, tc.GetStop(from)->vertex_id, tc.GetStop(to)->vertex_id));
+    auto info = std::move(router.ResultRoute(tc, tc.GetStop(from)->name, tc.GetStop(to)->name));
     json::Node result_node;
     if(!info.has_value()){ 
         result_node = json::Builder{}.StartDict()

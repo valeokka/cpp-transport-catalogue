@@ -15,7 +15,6 @@ struct Stop{
     std::string name;
     geo::Coordinates coords;
     std::unordered_set<std::string_view> routes;
-    graph::VertexId vertex_id = 0;
 
     bool operator<(Stop other);
     bool operator==(Stop other);
