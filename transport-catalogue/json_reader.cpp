@@ -3,18 +3,15 @@
 namespace TransportCatalogue{
 using namespace std::literals;
 
-JSONReader::JSONReader(std::istream& is) : 
-is_(is) {}
+
 
 void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Router::TransportRouter& router){
     std::unordered_map<std::string, Stop> stops;
     std::unordered_map<std::string, std::pair<bool, std::vector<std::string>>> buses;
     std::vector<std::tuple<std::string, std::string, int>> distance_stops; 
 
-    auto requests = json::Load(is_).GetRoot().AsDict();
-    
-    if(requests.count("base_requests")){
-        auto base_requests = requests.at("base_requests").AsArray();
+    if(requests_.count("base_requests")){
+        auto base_requests = requests_.at("base_requests").AsArray();
         for (auto request_map : base_requests){
             json::Dict request = request_map.AsDict();
             std::string name = request.at("name").AsString();
@@ -34,15 +31,15 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Ro
         for(const auto& [name, distance_to, distance] : distance_stops)
         {tc.SetDistance(name,distance_to, distance);}
     }
-    if(requests.count("routing_settings")){
-        auto routing_requests = requests.at("routing_settings").AsDict();
+    if(requests_.count("routing_settings")){
+        auto routing_requests = requests_.at("routing_settings").AsDict();
         int bus_wait_time = routing_requests.at("bus_wait_time").AsInt();
         int bus_velocity = routing_requests.at("bus_velocity").AsInt();
         router.SetBusWaitTime(bus_wait_time);
         router.SetBusSpeed(bus_velocity);
     }
-    if(requests.count("render_settings")){
-        auto render_requests = requests.at("render_settings").AsDict();
+    if(requests_.count("render_settings")){
+        auto render_requests = requests_.at("render_settings").AsDict();
         auto bus_label_offset = 
                 render_requests.at("bus_label_offset").AsArray();
         auto stop_label_offset = 
@@ -78,9 +75,9 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Ro
         render.SetRoutes(tc.RequestBuses());
         render.SetStops(tc.RequestStops());
     }
-    if(requests.count("stat_requests")){
+    if(requests_.count("stat_requests")){
         json::Array results;
-        auto stat_requests = requests.at("stat_requests").AsArray();
+        auto stat_requests = requests_.at("stat_requests").AsArray();
         for (auto request_map : stat_requests){
             json::Dict request = request_map.AsDict();
             int id = request.at("id").AsInt();
@@ -98,6 +95,14 @@ void JSONReader::Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Ro
     //    json::Node node = ;
        json::Print(json::Document(std::move(std::move(results))), out_);
     }
+}
+
+std::string JSONReader::GetSerializationSettings() const {
+    std::string result;
+    if(requests_.count("serialization_settings")){
+        result = requests_.at("serialization_settings").AsDict().at("file").AsString();
+    }
+    return result;
 }
 
 Stop JSONReader::ReadStop(const json::Dict& request){

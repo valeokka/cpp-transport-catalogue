@@ -36,9 +36,15 @@ struct CompletedRoute {
 class TransportRouter {
 public:
 	std::optional<CompletedRoute> ResultRoute(const TransportCatalogue& tc, 
-								std::string_view from, std::string_view to);
+							const std::string& from, const std::string& to);
 	void SetBusWaitTime(int time);
 	void SetBusSpeed(double speed);
+	std::unordered_map<std::string, graph::VertexId> GetStopIds() const;
+	std::pair<int, double> GetRouterSettings() const;
+	graph::DirectedWeightedGraph<double> GetGraph() const;
+	void SetStopIds(const std::unordered_map<std::string, graph::VertexId>& stop_ids);
+	void SetGraph(const graph::DirectedWeightedGraph<double> &graph);
+
 private:
 	int bus_wait_time_ = 0;
 	double bus_speed_ = 0.0;
@@ -46,7 +52,7 @@ private:
 	graph::DirectedWeightedGraph<double> graph_;
 	std::unordered_map<graph::EdgeId, EdgeInfo> edges_;
 	std::unique_ptr<graph::Router<double>> router_;
-	std::unordered_map<std::string_view, graph::VertexId> vertex_ids;
+	std::unordered_map<std::string, graph::VertexId> vertex_ids;
 	
 	void CreateGraph(const std::unordered_map <std::string_view, Bus*>& info_bus, const TransportCatalogue& tc);
 	std::optional<CompletedRoute> ComputeRoute(graph::VertexId from, graph::VertexId to);

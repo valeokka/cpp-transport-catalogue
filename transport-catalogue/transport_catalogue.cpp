@@ -97,5 +97,9 @@ int TransportCatalogue::GetDistance(const Stop* lhs, const Stop* rhs) const{
 
 size_t TransportCatalogue::GetStopCount() const{ return stop_list_.size();}  
 size_t TransportCatalogue::GetBusCount() const{ return bus_list_.size();}
+    const std::unordered_map<std::pair<Stop*, Stop*>, int, 
+        Utility::StopDistanceHasher> TransportCatalogue::GetDistances() const{
+    return distances_;
+                        }
 
 }//namespace TransportCatalogue

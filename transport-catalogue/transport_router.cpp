@@ -7,7 +7,7 @@ void TransportRouter::SetBusWaitTime(int time){bus_wait_time_ = time;}
 void TransportRouter::SetBusSpeed(double speed){bus_speed_ = speed;}
 
 std::optional<CompletedRoute> TransportRouter::ResultRoute(const TransportCatalogue& tc, 
-											std::string_view from, std::string_view to){
+										const std::string& from, const std::string& to){
 	if(vertex_ids.size() == 0){SetVertextIDs(tc);} // создается только если не был создан ранее, т.к. в таком случае size() == 0
 	const std::unordered_map<std::string_view, Bus*>& info_bus = tc.RequestBuses();
 	if (graph_.GetVertexCount() == 0){CreateGraph(info_bus, tc);} // создается только если не был создан ранее, т.к. в таком случае GetVertexCount() == 0
@@ -17,7 +17,7 @@ std::optional<CompletedRoute> TransportRouter::ResultRoute(const TransportCatalo
 void TransportRouter::SetVertextIDs(const TransportCatalogue& tc){
 	std::unordered_map<std::string_view, Stop*> stops = tc.RequestStops();
 	for(auto [sv, stop] : stops){
-		vertex_ids[stop->name] = vertex_count_++;
+		vertex_ids[std::string{stop->name}] = vertex_count_++;
 	}
 }
 
@@ -61,6 +61,26 @@ std::optional<CompletedRoute> TransportRouter::ComputeRoute(graph::VertexId from
 		result.route.push_back(CompletedRoute::Line{info.stop, info.bus, wait_time, run_time, info.count});
 	}
 	return result;
+}
+
+std::unordered_map<std::string, graph::VertexId> TransportRouter::GetStopIds() const {
+	return vertex_ids;
+}
+
+std::pair<int, double> TransportRouter::GetRouterSettings() const{
+	return {bus_wait_time_, bus_speed_};
+}
+
+graph::DirectedWeightedGraph<double> TransportRouter::GetGraph() const{
+	return graph_;
+}
+
+void TransportRouter::SetStopIds(const std::unordered_map<std::string, graph::VertexId>& stop_ids){
+	vertex_ids = std::move(stop_ids);
+}
+
+void TransportRouter::SetGraph(const graph::DirectedWeightedGraph<double> &graph){
+	graph_ = std::move(graph);
 }
 
 } // namespace Router

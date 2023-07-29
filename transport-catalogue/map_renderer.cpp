@@ -34,22 +34,22 @@
         doc_.Clear();
     }
 
-        void MapRenderer::RenderBusRoutesLinesLayer(const SphereProjector& projector,
-                            std::set<const Bus*, LexSort<Bus>>& routes_to_render){
-            int index = 0;
-            for (const auto& bus : routes_to_render){
-                svg::Polyline line;
-                for (const auto &stop : bus->route){ line.AddPoint(projector(stop->coords));}
-            
-                line.SetStrokeColor(settings_.color_palette[index % settings_.color_palette.size()])
-                    .SetStrokeLineJoin(svg::StrokeLineJoin::ROUND)
-                    .SetStrokeLineCap(svg::StrokeLineCap::ROUND)
-                    .SetStrokeWidth(settings_.line_width)
-                    .SetFillColor("none");
-                ++index;
-                doc_.Add(line);
-            }
+    void MapRenderer::RenderBusRoutesLinesLayer(const SphereProjector& projector,
+                        std::set<const Bus*, LexSort<Bus>>& routes_to_render){
+        int index = 0;
+        for (const auto& bus : routes_to_render){
+            svg::Polyline line;
+            for (const auto &stop : bus->route){ line.AddPoint(projector(stop->coords));}
+        
+            line.SetStrokeColor(settings_.color_palette[index % settings_.color_palette.size()])
+                .SetStrokeLineJoin(svg::StrokeLineJoin::ROUND)
+                .SetStrokeLineCap(svg::StrokeLineCap::ROUND)
+                .SetStrokeWidth(settings_.line_width)
+               .SetFillColor("none");
+            ++index;
+            doc_.Add(line);
         }
+    }
 
     void MapRenderer::RenderRoutesNamesLayer(const SphereProjector& projector,
                     std::set<const Bus*, LexSort<Bus>>& routes_to_render) {
@@ -134,5 +134,15 @@
                 doc_.Add(text);
             }
         }
+
+
+        //PROTOBUF FOR
+
+        MapRender::RenderOptions MapRenderer::GetRenderSettings() const{
+            return settings_;
+        }
+
+
+
 
     }//namespace MapRender

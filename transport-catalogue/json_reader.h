@@ -20,12 +20,17 @@ namespace TransportCatalogue{
 class JSONReader{
 public:
     JSONReader() = default;
-    explicit JSONReader(std::istream& is);
+    JSONReader(std::istream& is) : 
+    is_(is){
+        requests_ = json::Load(is_).GetRoot().AsDict();
+    }
     void Read(TransportCatalogue& tc, MapRender::MapRenderer& render, Router::TransportRouter& router);
+    std::string GetSerializationSettings() const;
 
 private:
     std::istream& is_;
     std::ostream& out_ = std::cout;
+    json::Dict requests_;
     Stop ReadStop(const json::Dict& request);
     std::pair<bool, std::vector<std::string>> ReadBus(const json::Dict& request);
     json::Dict OutStopRoutes(const TransportCatalogue& tc, std::string_view stop_name, int id);

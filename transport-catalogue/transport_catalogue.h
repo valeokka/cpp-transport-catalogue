@@ -35,7 +35,8 @@ public:
     const std::unordered_map<std::string_view, Stop*> RequestStops() const;
     const std::unordered_map<std::string_view, Bus*> RequestBuses() const;
     int GetDistance(const Stop* lhs, const Stop* rhs) const;
-	size_t GetVertexCount() const;
+    const std::unordered_map<std::pair<Stop*, Stop*>, int, 
+                        Utility::StopDistanceHasher> GetDistances() const;
 
 private:
     std::deque<Stop> stop_list_;

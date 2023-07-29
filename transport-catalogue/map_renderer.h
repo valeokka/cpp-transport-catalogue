@@ -109,6 +109,7 @@ public:
     void SetRoutes(const std::unordered_map<std::string_view, TransportCatalogue::Bus* > &routes);
     void SetStops(const std::unordered_map<std::string_view, TransportCatalogue::Stop*> &stops);
     void Render(std::ostream &output);
+    MapRender::RenderOptions GetRenderSettings() const;
 
 private:
     RenderOptions settings_; 
