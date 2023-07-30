@@ -221,6 +221,11 @@ json::Dict JSONReader::OutMapRender(const TransportCatalogue& tc, MapRender::Map
 
 json::Dict JSONReader::OutRouteInfo(const TransportCatalogue& tc, Router::TransportRouter& router,
                                             std::string_view from, std::string_view to, int id){
+
+	if (router.GetVertexCount() == 0){// создается только если не был создан ранее, т.к. в таком случае GetVertexCount() == 0
+        const std::unordered_map<std::string_view, Bus*>& info_bus = tc.RequestBuses();
+        router.CreateGraph(info_bus, tc);
+    } 
     auto info = std::move(router.ResultRoute(tc, tc.GetStop(from)->name, tc.GetStop(to)->name));
     json::Node result_node;
     if(!info.has_value()){ 

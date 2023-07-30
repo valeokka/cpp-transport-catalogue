@@ -1,8 +1,6 @@
 #include "serialization.h"
 
-
-
-using namespace std;
+namespace serialization{
 
 void Serialize(const TransportCatalogue::TransportCatalogue& tc,
 	const MapRender::MapRenderer& renderer,
@@ -56,7 +54,7 @@ serialize::Distance Serialize(std::string first, std::string second, int distanc
 	return result;
 }
 
-serialize::Point GetPointSerialize(const pair<double, double>& point) {
+serialize::Point GetPointSerialize(const std::pair<double, double>& point) {
 	serialize::Point result;
 	result.set_x(point.first);
 	result.set_y(point.second);
@@ -107,7 +105,7 @@ serialize::RenderSettings GetRenderSettingSerialize(const MapRender::RenderOptio
 	return result;
 }
 
-serialize::RouterSettings GetRouterSettingSerialize(const pair<int, double> router_settings) {
+serialize::RouterSettings GetRouterSettingSerialize(const std::pair<int, double> router_settings) {
 	serialize::RouterSettings result;
 	result.set_bus_wait_time(router_settings.first);
 	result.set_bus_velocity(router_settings.second);
@@ -287,3 +285,5 @@ void Deserialize(
 	router.SetGraph(GetGraphFromDB(router_s));
 
 }
+
+}//namespace serialization

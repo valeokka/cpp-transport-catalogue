@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
 
 		std::ofstream ofs(js.GetSerializationSettings(), std::ios::binary);
 				
-		Serialize(tc, render, router, ofs);
+		serialization::Serialize(tc, render, router, ofs);
 		
 	}
 	else if (mode == "process_requests"sv) {
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
 			MapRender::MapRenderer render;
 			TransportCatalogue::Router::TransportRouter router;
 
-			Deserialize(tc, render, router, file);
+			serialization::Deserialize(tc, render, router, file);
             js.Read(tc, render, router);
 		}
 	}

@@ -9,8 +9,6 @@ void TransportRouter::SetBusSpeed(double speed){bus_speed_ = speed;}
 std::optional<CompletedRoute> TransportRouter::ResultRoute(const TransportCatalogue& tc, 
 										const std::string& from, const std::string& to){
 	if(vertex_ids.size() == 0){SetVertextIDs(tc);} // создается только если не был создан ранее, т.к. в таком случае size() == 0
-	const std::unordered_map<std::string_view, Bus*>& info_bus = tc.RequestBuses();
-	if (graph_.GetVertexCount() == 0){CreateGraph(info_bus, tc);} // создается только если не был создан ранее, т.к. в таком случае GetVertexCount() == 0
 	return ComputeRoute(vertex_ids.at(from), vertex_ids.at(to));
 }
 
@@ -82,6 +80,9 @@ void TransportRouter::SetStopIds(const std::unordered_map<std::string, graph::Ve
 void TransportRouter::SetGraph(const graph::DirectedWeightedGraph<double> &graph){
 	graph_ = std::move(graph);
 }
+    size_t TransportRouter::GetVertexCount() const{
+		return graph_.GetVertexCount();
+	}
 
 } // namespace Router
 } // namespace TransportCatalogue

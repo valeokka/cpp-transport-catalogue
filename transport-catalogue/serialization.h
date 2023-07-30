@@ -10,6 +10,8 @@
 
 #include <transport_catalogue.pb.h>
 
+namespace serialization{
+
 void Serialize(const TransportCatalogue::TransportCatalogue& tc,
 	const MapRender::MapRenderer& renderer,
 	const TransportCatalogue::Router::TransportRouter& router,
@@ -32,3 +34,5 @@ void Deserialize(
 	, MapRender::MapRenderer& render
 	, TransportCatalogue::Router::TransportRouter& router
 	, std::istream& input);
+
+}//namespace serialization
